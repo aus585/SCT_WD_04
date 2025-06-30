@@ -74,6 +74,80 @@
           transform: translateY(0);
         }
       }
+
+      /* ===== 📱 Mobile Responsiveness ===== */
+@media (max-width: 768px) {
+  body {
+    overflow: auto;
+  }
+
+  .flex.h-screen {
+    flex-direction: column;
+    height: auto;
+  }
+
+  /* Sidebar */
+  .w-1\/4 {
+    width: 100% !important;
+    padding: 1.5rem;
+  }
+
+  /* Main content */
+  .w-3\/4 {
+    width: 100% !important;
+    padding: 1.5rem;
+  }
+
+  /* Real-time clock */
+  #currentDateTime {
+    position: relative;
+    top: unset;
+    right: unset;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  /* Responsive form and detail card */
+  .glass-card {
+    width: 100% !important;
+    padding: 1rem;
+  }
+
+  /* Inputs and buttons */
+  input[type="text"],
+  input[type="date"],
+  input[type="time"] {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .glass-button,
+  button,
+  label {
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .flex.space-x-3,
+  .flex.space-x-4 {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Subtask items spacing fix */
+  #subtaskList li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Filter list items */
+  .space-y-4.text-lg li {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+}
     </style>
   </head>
 
