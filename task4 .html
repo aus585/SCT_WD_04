@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List Web App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ==== Custom CSS Styling ==== -->
+    <style>
+      /* Background and typography */
+      body {
+        background: linear-gradient(120deg, #2c5364, #203a43, #0f2027);
+        font-family: "Segoe UI", sans-serif;
+        overflow: hidden;
+      }
+
+      /* Glassmorphism card effect */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      /* Hover lift effect for cards */
+      .glass-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Animated buttons */
+      .glass-button {
+        transition: transform 0.2s, background 0.3s;
+      }
+
+      /* Hover effect for buttons */
+      .glass-button:hover {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Hover background for list items */
+      .task-entry:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Strikethrough class for completed tasks */
+      .line-through {
+        text-decoration: line-through;
+      }
+
+      /* Hide raw file input visually */
+      input[type="file"] {
+        display: none;
+      }
+
+      /* Fade-slide animation for UI elements */
+      .fade-slide {
+        animation: fadeSlide 0.5s ease-out;
+      }
+
+      /* Slide up and fade-in effect */
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="text-white">
+    <div class="flex h-screen">
+      <!-- ==== Sidebar Navigation Panel ==== -->
+      <div
+        class="w-1/4 p-6 bg-gradient-to-b from-cyan-900 to-cyan-700 overflow-y-auto"
+      >
+        <!-- Title -->
+        <h1 class="text-3xl font-bold italic mb-10 fade-slide">TO DO LIST</h1>
+
+        <!-- Filter Buttons -->
+        <ul class="space-y-4 text-lg">
+          <li
+            class="hover:underline cursor-pointer"
+            onclick="filterTasks('overdue')"
+          >
+            Overdue
+          </li>
+          <li
+            class="hover:underline cursor-pointer"
+            onclick="filterTasks('upcoming')"
+          >
+            Upcoming
+          </li>
+          <li
+            class="hover:underline cursor-pointer"
+            onclick="filterTasks('all')"
+          >
+            All
+          </li>
+          <li
+            class="hover:underline cursor-pointer"
+            onclick="filterTasks('completed')"
+          >
+            Completed
+          </li>
+        </ul>
+
+        <!-- Sidebar Task List -->
+        <div class="mt-12">
+          <h2 class="text-xl font-semibold mb-2">TASKS</h2>
+          <ul id="taskList" class="space-y-2 text-md"></ul>
+        </div>
+
+        <!-- Add Task Button -->
+        <button
+          onclick="showAddTaskForm()"
+          class="mt-10 bg-blue-500 px-4 py-2 rounded-lg font-bold glass-button w-full"
+        >
+          + ADD TASK
+        </button>
+      </div>
+
+      <!-- ==== Main Content Area ==== -->
+      <div class="w-3/4 p-8 relative overflow-y-auto">
+        <!-- Real-time Date & Time Display -->
+        <p id="currentDateTime" class="absolute top-2 right-4 text-sm"></p>
+
+        <!-- Section Heading -->
+        <h2 class="text-2xl mb-6 font-bold fade-slide">ADD TASK</h2>
+
+        <!-- ==== Add Task Form Card ==== -->
+        <div id="addTaskCard" class="glass-card w-full max-w-2xl fade-slide">
+          <!-- Main Task Input -->
+          <input
+            id="taskTitle"
+            type="text"
+            placeholder="Main Task"
+            class="w-full text-2xl bg-transparent border-b border-white mb-3 focus:outline-none"
+          />
+
+          <!-- Due Date and Time -->
+          <div class="flex space-x-4 mb-4">
+            <div>
+              <label>Due Date:</label>
+              <input
+                id="dueDate"
+                type="date"
+                class="text-black rounded px-2 py-1"
+              />
+            </div>
+            <div>
+              <label>Time:</label>
+              <input
+                id="dueTime"
+                type="time"
+                class="text-black rounded px-2 py-1"
+              />
+            </div>
+          </div>
+
+          <!-- Subtask Input Section -->
+          <div class="mb-3">
+            <label>Subtask:</label>
+            <input
+              id="subtaskInput"
+              type="text"
+              placeholder="Add a subtask"
+              class="w-full bg-transparent border-b border-white focus:outline-none"
+            />
+            <ul id="subtaskList" class="mt-2 space-y-1 text-sm"></ul>
+          </div>
+
+          <!-- Subtask + Photo + Edit Buttons -->
+          <div class="flex space-x-3 mt-4">
+            <button
+              onclick="addSubtask()"
+              class="bg-gray-700 px-3 py-1 rounded glass-button"
+            >
+              + subtask
+            </button>
+
+            <!-- Photo Upload via Label Trigger -->
+            <label
+              class="bg-gray-700 px-3 py-1 rounded glass-button cursor-pointer"
+            >
+              add photo
+              <input
+                id="photoInput"
+                type="file"
+                accept="image/*"
+                onchange="uploadPhoto(event)"
+              />
+            </label>
+
+            <!-- Edit Task Button -->
+            <button
+              onclick="editTask()"
+              class="bg-yellow-600 px-3 py-1 rounded glass-button"
+            >
+              edit
+            </button>
+          </div>
+
+          <!-- Save Task Button -->
+          <button
+            onclick="saveTask()"
+            class="mt-6 bg-gray-500 px-6 py-2 rounded glass-button"
+          >
+            save
+          </button>
+        </div>
+
+        <!-- ==== Task Detail Panel (Hidden by Default) ==== -->
+        <div
+          id="taskDetail"
+          class="glass-card w-full max-w-2xl mt-6 hidden fade-slide"
+        >
+          <h3 class="text-xl font-bold mb-2" id="detailTitle"></h3>
+          <p id="detailDue"></p>
+          <img id="taskImage" class="my-2 rounded shadow max-h-40" />
+          <ul id="detailSubtasks" class="list-disc list-inside mt-2"></ul>
+
+          <!-- Delete Task Button -->
+          <button
+            onclick="deleteTask()"
+            class="mt-4 bg-red-600 px-4 py-2 rounded glass-button"
+          >
+            Delete Task
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==== Custom JavaScript ==== -->
+    <script>
+      // ========= App State Variables =========
+      let subtasks = []; // Temporary subtask list
+      let tasks = []; // Full list of all tasks
+      let editingIndex = null; // Index of task being edited
+      let selectedTaskIndex = null; // Currently viewed task index
+      let uploadedImage = null; // Image (base64) for task
+
+      // ========= Add Subtask =========
+      function addSubtask() {
+        const subtaskInput = document.getElementById("subtaskInput");
+        const subtaskText = subtaskInput.value.trim();
+        if (subtaskText !== "") {
+          subtasks.push({ text: subtaskText, completed: false });
+          updateSubtaskList();
+          subtaskInput.value = "";
+        }
+      }
+
+      // ========= Render Subtask List =========
+      function updateSubtaskList() {
+        const subtaskList = document.getElementById("subtaskList");
+        subtaskList.innerHTML = "";
+
+        subtasks.forEach((task, i) => {
+          const li = document.createElement("li");
+          li.className = "flex items-center justify-between";
+
+          // Left side: checkbox + text
+          const left = document.createElement("div");
+          left.className = "flex items-center";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "mr-2";
+          checkbox.checked = task.completed;
+          checkbox.onchange = () => {
+            task.completed = checkbox.checked;
+            li.className = checkbox.checked
+              ? "line-through flex justify-between items-center"
+              : "flex justify-between items-center";
+          };
+
+          const span = document.createElement("span");
+          span.textContent = task.text;
+          if (task.completed) li.classList.add("line-through");
+
+          left.appendChild(checkbox);
+          left.appendChild(span);
+
+          // Right side: edit and delete buttons
+          const right = document.createElement("div");
+          right.className = "space-x-2";
+
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "✏️";
+          editBtn.className = "text-sm hover:text-yellow-400";
+          editBtn.onclick = () => {
+            const newText = prompt("Edit subtask:", task.text);
+            if (newText !== null && newText.trim() !== "") {
+              task.text = newText.trim();
+              updateSubtaskList();
+            }
+          };
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "❌";
+          deleteBtn.className = "text-sm hover:text-red-400";
+          deleteBtn.onclick = () => {
+            subtasks.splice(i, 1);
+            updateSubtaskList();
+          };
+
+          right.appendChild(editBtn);
+          right.appendChild(deleteBtn);
+
+          li.appendChild(left);
+          li.appendChild(right);
+          subtaskList.appendChild(li);
+        });
+      }
+
+      // ========= Upload Photo and Convert to Base64 =========
+      function uploadPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            uploadedImage = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      // ========= Save Task (New or Edited) =========
+      function saveTask() {
+        const title = document.getElementById("taskTitle").value.trim();
+        const dueDate = document.getElementById("dueDate").value;
+        const dueTime = document.getElementById("dueTime").value;
+        if (!title) return alert("Please enter a task title.");
+
+        const task = {
+          title,
+          dueDate,
+          dueTime,
+          subtasks: JSON.parse(JSON.stringify(subtasks)),
+          completed: subtasks.length
+            ? subtasks.every((s) => s.completed)
+            : false,
+          image: uploadedImage,
+        };
+
+        if (editingIndex !== null) {
+          tasks[editingIndex] = task;
+          saveTasksToStorage();
+          editingIndex = null;
+          document.getElementById("taskList").innerHTML = "";
+          tasks.forEach(displayTaskInSidebar);
+        } else {
+          tasks.push(task);
+          displayTaskInSidebar(task, tasks.length - 1);
+          saveTasksToStorage();
+        }
+
+        // Reset input form
+        document.getElementById("taskTitle").value = "";
+        document.getElementById("dueDate").value = "";
+        document.getElementById("dueTime").value = "";
+        document.getElementById("subtaskList").innerHTML = "";
+        uploadedImage = null;
+        subtasks = [];
+      }
+
+      // ========= Load Selected Task into Form =========
+      function editTask() {
+        if (selectedTaskIndex === null) return alert("Select a task to edit.");
+        const task = tasks[selectedTaskIndex];
+        document.getElementById("taskTitle").value = task.title;
+        document.getElementById("dueDate").value = task.dueDate;
+        document.getElementById("dueTime").value = task.dueTime;
+        uploadedImage = task.image;
+        subtasks = JSON.parse(JSON.stringify(task.subtasks));
+        updateSubtaskList();
+        editingIndex = selectedTaskIndex;
+        showAddTaskForm();
+      }
+
+      // ========= Delete Task =========
+      function deleteTask() {
+        if (selectedTaskIndex !== null) {
+          tasks.splice(selectedTaskIndex, 1);
+          saveTasksToStorage();
+          document.getElementById("taskList").innerHTML = "";
+          tasks.forEach(displayTaskInSidebar);
+          document.getElementById("taskDetail").classList.add("hidden");
+          selectedTaskIndex = null;
+        }
+      }
+
+      // ========= Show Task in Sidebar =========
+      function displayTaskInSidebar(task, index) {
+        const taskList = document.getElementById("taskList");
+        const li = document.createElement("li");
+        li.className = "cursor-pointer hover:underline";
+        li.textContent = task.title;
+        li.onclick = () => showTaskDetail(task, index);
+        taskList.appendChild(li);
+      }
+
+      // ========= Scroll to Task Form =========
+      function showAddTaskForm() {
+        document.getElementById("taskDetail").classList.add("hidden");
+        document
+          .getElementById("addTaskCard")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // ========= Show Task Details =========
+      function showTaskDetail(task, index) {
+        selectedTaskIndex = index;
+
+        const titleElem = document.getElementById("detailTitle");
+        titleElem.textContent = task.title;
+        titleElem.className = task.completed ? "line-through" : "";
+
+        document.getElementById(
+          "detailDue"
+        ).textContent = `Due: ${task.dueDate} at ${task.dueTime}`;
+
+        document.getElementById("taskImage").src = task.image || "";
+        document.getElementById("taskImage").style.display = task.image
+          ? "block"
+          : "none";
+
+        // Setup main task checkbox
+        const mainCheckbox = document.createElement("input");
+        mainCheckbox.type = "checkbox";
+        mainCheckbox.className = "mr-2";
+        mainCheckbox.checked = task.completed;
+        mainCheckbox.onchange = () => {
+          task.completed = mainCheckbox.checked;
+          titleElem.className = task.completed ? "line-through" : "";
+          task.subtasks.forEach((st) => (st.completed = task.completed));
+          showTaskDetail(task, index);
+          saveTasksToStorage();
+        };
+
+        titleElem.innerHTML = ""; // Clear before re-render
+        titleElem.appendChild(mainCheckbox);
+        titleElem.appendChild(document.createTextNode(task.title));
+
+        // Show subtasks
+        const detailSubtasks = document.getElementById("detailSubtasks");
+        detailSubtasks.innerHTML = "";
+        task.subtasks.forEach((st, i) => {
+          const li = document.createElement("li");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "mr-2";
+          checkbox.checked = st.completed;
+          checkbox.onchange = () => {
+            st.completed = checkbox.checked;
+            li.className = st.completed ? "line-through" : "";
+            task.completed = task.subtasks.every((s) => s.completed);
+            showTaskDetail(task, index);
+            saveTasksToStorage();
+          };
+          li.appendChild(checkbox);
+          li.appendChild(document.createTextNode(st.text));
+          if (st.completed) li.classList.add("line-through");
+          detailSubtasks.appendChild(li);
+        });
+
+        document.getElementById("taskDetail").classList.remove("hidden");
+        document
+          .getElementById("taskDetail")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // ========= Filter Tasks Based on Type =========
+      function filterTasks(type) {
+        const taskList = document.getElementById("taskList");
+        taskList.innerHTML = "";
+        document.getElementById("taskDetail").classList.add("hidden");
+        const now = new Date();
+
+        tasks.forEach((task, index) => {
+          const dueDateTime = new Date(`${task.dueDate}T${task.dueTime}`);
+          if (
+            (type === "completed" && task.completed) ||
+            (type === "overdue" && dueDateTime < now && !task.completed) ||
+            (type === "upcoming" && dueDateTime >= now && !task.completed) ||
+            type === "all"
+          ) {
+            displayTaskInSidebar(task, index);
+          }
+        });
+      }
+
+      // ========= Live Date and Time Clock =========
+      function updateDateTime() {
+        const now = new Date();
+        const options = { weekday: "short", month: "short", day: "numeric" };
+        const formattedDate = now.toLocaleDateString("en-US", options);
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12 || 12;
+        const formattedTime = `${hours}:${minutes}${ampm}`;
+        document.getElementById(
+          "currentDateTime"
+        ).textContent = `${formattedDate}. ${formattedTime}`;
+      }
+
+      // Start clock
+      setInterval(updateDateTime, 1000);
+      window.onload = function () {
+        const storedTasks = localStorage.getItem("tasks");
+        if (storedTasks) {
+          tasks = JSON.parse(storedTasks);
+          tasks.forEach((task, index) => displayTaskInSidebar(task, index));
+        }
+      };
+
+      updateDateTime();
+      function saveTasksToStorage() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+    </script>
+  </body>
+</html>
