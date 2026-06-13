@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>To Do List Web App</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="text-white">
+
+<div class="flex h-screen">
+
+  <!-- Sidebar -->
+  <div class="w-1/4 sidebar p-6 overflow-y-auto">
+
+    <h1 class="text-3xl font-bold italic mb-10">TO DO LIST</h1>
+
+    <ul class="space-y-4 text-lg">
+      <li onclick="filterTasks('overdue')">Overdue</li>
+      <li onclick="filterTasks('upcoming')">Upcoming</li>
+      <li onclick="filterTasks('all')">All</li>
+      <li onclick="filterTasks('completed')">Completed</li>
+    </ul>
+
+    <div class="mt-10">
+      <h2 class="text-xl">TASKS</h2>
+      <ul id="taskList"></ul>
+    </div>
+
+    <button onclick="showAddTaskForm()" class="mt-10 w-full btn">
+      + ADD TASK
+    </button>
+
+  </div>
+
+  <!-- Main -->
+  <div class="w-3/4 p-8 relative overflow-y-auto">
+
+    <p id="currentDateTime" class="absolute top-2 right-4 text-sm"></p>
+
+    <h2 class="text-2xl mb-6">ADD TASK</h2>
+
+    <!-- Form -->
+    <div id="addTaskCard" class="card">
+
+      <input id="taskTitle" type="text" placeholder="Main Task"/>
+
+      <div class="flex gap-4">
+        <input id="dueDate" type="date"/>
+        <input id="dueTime" type="time"/>
+      </div>
+
+      <input id="subtaskInput" type="text" placeholder="Add subtask"/>
+      <ul id="subtaskList"></ul>
+
+      <div class="flex gap-3 mt-3">
+        <button onclick="addSubtask()">+ Subtask</button>
+
+        <label>
+          Add Photo
+          <input type="file" id="photoInput" onchange="uploadPhoto(event)">
+        </label>
+
+        <button onclick="editTask()">Edit</button>
+      </div>
+
+      <button onclick="saveTask()" class="mt-4">Save</button>
+
+    </div>
+
+    <!-- Details -->
+    <div id="taskDetail" class="card hidden">
+      <h3 id="detailTitle"></h3>
+      <p id="detailDue"></p>
+      <img id="taskImage"/>
+      <ul id="detailSubtasks"></ul>
+
+      <button onclick="deleteTask()">Delete</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- JS -->
+<script src="script.js"></script>
+</body>
+</html>
