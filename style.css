@@ -1,48 +1,140 @@
-body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(120deg,#2c5364,#203a43,#0f2027);
-  overflow: hidden;
-}
+      /* Background and typography */
+      body {
+        background: linear-gradient(120deg, #2c5364, #203a43, #0f2027);
+        font-family: "Segoe UI", sans-serif;
+        overflow: hidden;
+      }
 
-.sidebar {
-  background: linear-gradient(to bottom,#0f4c5c,#136a8a);
-}
+      /* Glassmorphism card effect */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
 
-.card {
-  background: rgba(255,255,255,0.1);
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 20px;
-  backdrop-filter: blur(10px);
-}
+      /* Hover lift effect for cards */
+      .glass-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      }
 
-input {
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-}
+      /* Animated buttons */
+      .glass-button {
+        transition: transform 0.2s, background 0.3s;
+      }
 
-button {
-  padding: 8px 12px;
-  background: #444;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+      /* Hover effect for buttons */
+      .glass-button:hover {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.2);
+      }
 
-button:hover {
-  background: #666;
-}
+      /* Hover background for list items */
+      .task-entry:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
 
-#taskList li {
-  cursor: pointer;
-  margin: 5px 0;
-}
+      /* Strikethrough class for completed tasks */
+      .line-through {
+        text-decoration: line-through;
+      }
 
-.hidden {
-  display: none;
+      /* Hide raw file input visually */
+      input[type="file"] {
+        display: none;
+      }
+
+      /* Fade-slide animation for UI elements */
+      .fade-slide {
+        animation: fadeSlide 0.5s ease-out;
+      }
+
+      /* Slide up and fade-in effect */
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ===== 📱 Mobile Responsiveness ===== */
+@media (max-width: 768px) {
+  body {
+    overflow: auto;
+  }
+
+  .flex.h-screen {
+    flex-direction: column;
+    height: auto;
+  }
+
+  /* Sidebar */
+  .w-1\/4 {
+    width: 100% !important;
+    padding: 1.5rem;
+  }
+
+  /* Main content */
+  .w-3\/4 {
+    width: 100% !important;
+    padding: 1.5rem;
+  }
+
+  /* Real-time clock */
+  #currentDateTime {
+    position: relative;
+    top: unset;
+    right: unset;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  /* Responsive form and detail card */
+  .glass-card {
+    width: 100% !important;
+    padding: 1rem;
+  }
+
+  /* Inputs and buttons */
+  input[type="text"],
+  input[type="date"],
+  input[type="time"] {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .glass-button,
+  button,
+  label {
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .flex.space-x-3,
+  .flex.space-x-4 {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Subtask items spacing fix */
+  #subtaskList li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Filter list items */
+  .space-y-4.text-lg li {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
 }
